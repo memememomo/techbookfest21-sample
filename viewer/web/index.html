@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ROM ビューアー</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>ROM ビューアー</h1>
+      <div class="controls">
+        <button data-rom="hello.nes">hello.nes</button>
+        <button data-rom="game.nes">game.nes</button>
+        <label class="file">ほかの ROM… <input type="file" id="rom" accept=".nes" /></label>
+        <span class="sep"></span>
+        <button id="pause" disabled>一時停止</button>
+        <button id="step" disabled>1 フレーム進める</button>
+        <button id="reset" disabled>リセット</button>
+        <span id="status">ROM を選んでください</span>
+      </div>
+    </header>
+
+    <main>
+      <section id="screen-section">
+        <h2>画面</h2>
+        <canvas id="screen" width="512" height="480"></canvas>
+        <p class="options">
+          <label><input type="checkbox" id="screen-grid" /> タイルの格子</label>
+          <label><input type="checkbox" id="screen-sprites" checked /> スプライトの枠</label>
+        </p>
+        <p class="note">十字キー: 矢印キー / A: X / B: Z / START: Enter / SELECT: 右 Shift</p>
+        <div id="screen-info" class="info"></div>
+      </section>
+
+      <section id="side">
+        <h2>ROM の情報</h2>
+        <table id="rom-info" class="kv"></table>
+
+        <h2>PPU のレジスタ</h2>
+        <table id="regs" class="kv"></table>
+
+        <h2>パレット <small>$3F00〜$3F1F</small></h2>
+        <div id="palettes"></div>
+        <p class="note">
+          各パレットの 0 番は透明で、代わりに背景色（$3F00）が見えます。
+          $3F10・$3F14・$3F18・$3F1C は $3F00・$3F04・$3F08・$3F0C と同じ場所です。
+        </p>
+      </section>
+
+      <section id="pattern-section" class="wide">
+        <h2>パターンテーブル <small>$0000〜$1FFF（CHR ROM）</small></h2>
+        <p class="options">
+          色:
+          <select id="pattern-palette">
+            <option value="-1">灰色（色番号 0〜3）</option>
+            <option value="0">背景パレット 0</option>
+            <option value="1">背景パレット 1</option>
+            <option value="2">背景パレット 2</option>
+            <option value="3">背景パレット 3</option>
+            <option value="4">スプライトパレット 0</option>
+            <option value="5">スプライトパレット 1</option>
+            <option value="6">スプライトパレット 2</option>
+            <option value="7">スプライトパレット 3</option>
+          </select>
+          <label><input type="checkbox" id="pattern-grid" checked /> タイルの格子</label>
+        </p>
+        <div class="pattern-row">
+          <figure>
+            <canvas class="pattern" data-table="0" width="384" height="384"></canvas>
+            <figcaption id="pattern-caption-0">$0000〜$0FFF</figcaption>
+          </figure>
+          <figure>
+            <canvas class="pattern" data-table="4096" width="384" height="384"></canvas>
+            <figcaption id="pattern-caption-1">$1000〜$1FFF</figcaption>
+          </figure>
+          <div id="tile-detail" class="info">
+            <p class="note">タイルにマウスを乗せると、16 バイトのデータが 8 × 8 ドットの絵になる様子を表示します。クリックすると固定します。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="nametable-section" class="wide">
+        <h2>ネームテーブルと属性テーブル <small>$2000〜$2FFF</small></h2>
+        <p class="options">
+          <label><input type="checkbox" id="nt-grid" /> タイルの格子</label>
+          <label><input type="checkbox" id="nt-attr" checked /> 属性テーブルの区切り</label>
+          <label><input type="checkbox" id="nt-palno" /> パレット番号</label>
+        </p>
+        <p id="mirroring-note" class="note"></p>
+        <div class="nametable-row">
+          <canvas id="nametables" width="1024" height="960"></canvas>
+          <div id="nt-detail" class="info">
+            <p class="note">タイルにマウスを乗せると、ネームテーブルと属性テーブルのどのバイトから色が決まるかを表示します。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="oam-section" class="wide">
+        <h2>OAM（スプライト） <small>256 バイト = 4 バイト × 64 個</small></h2>
+        <p class="options">
+          <label><input type="checkbox" id="oam-hidden" /> 画面の外（Y ≧ $EF）のスプライトも表示</label>
+        </p>
+        <p id="oam-note" class="note"></p>
+        <div class="oam-wrap">
+        <table id="oam">
+          <thead>
+            <tr>
+              <th>番号</th>
+              <th>OAM</th>
+              <th>Y</th>
+              <th>タイル</th>
+              <th>属性</th>
+              <th>X</th>
+              <th>絵</th>
+              <th>属性の意味</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="tip" hidden></div>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

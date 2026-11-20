@@ -1,0 +1,17 @@
+[package]
+name = "viewer"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# 第 12 章を終えた時点の mynes をそのまま使う
+mynes = { path = "../ch12" }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+
+[profile.dev]
+opt-level = 1
